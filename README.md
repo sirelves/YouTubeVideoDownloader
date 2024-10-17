@@ -45,8 +45,3 @@ Se você deseja contribuir, faça um fork do repositório e envie um pull reques
 Este projeto está licenciado sob a [MIT License](LICENSE).
 ```
 
-### Pontos-chave da Documentação Simples
-
-1. **Brevidade**: O texto é direto e vai ao ponto, sem muitos detalhes.
-2. **Estrutura Básica**: As seções principais estão presentes, mas são simplificadas.
-3. **Facilidade de Uso**: As instruções são claras e fáceis de seguir.
