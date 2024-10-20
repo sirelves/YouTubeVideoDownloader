@@ -35,21 +35,51 @@ if not exist "%YTDLP_PATH%" (
     echo yt-dlp baixado com sucesso.
 ) else (
     echo yt-dlp já está instalado.
+    rem Verifica se deseja atualizar o yt-dlp
+    set /p update_yt="Deseja verificar se há atualizações para o yt-dlp? [S/N]: "
+    if /I "%update_yt%"=="S" (
+        echo Verificando atualizações para o yt-dlp...
+        curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe -o "%YTDLP_PATH%"
+        if %ERRORLEVEL% neq 0 (
+            echo Falha ao atualizar yt-dlp. Verifique sua conexão de internet.
+            pause
+        ) else (
+            echo yt-dlp atualizado com sucesso.
+        )
+    )
 )
 
 rem Verifica se o ffmpeg está instalado
 if not exist "%FFMPEG_PATH%" (
     echo ffmpeg não encontrado. Tentando instalar usando winget...
     
-    rem Tenta instalar o ffmpeg com winget
-    winget install --id Gyan.FFmpeg -e -o "%INSTALL_DIR%"
+    rem Verifica se o winget está disponível
+    winget --version >nul 2>&1
     if %ERRORLEVEL% neq 0 (
-        echo Falha ao instalar o FFmpeg. Verifique se o winget está disponível.
+        echo winget não está disponível. Instale o winget manualmente ou verifique sua instalação.
         pause
         exit /b
     )
 
-    echo FFmpeg instalado com sucesso.
+    rem Tenta instalar o ffmpeg com winget
+    winget install --id Gyan.FFmpeg -e --accept-package-agreements --accept-source-agreements
+    if %ERRORLEVEL% neq 0 (
+        echo Falha ao instalar o FFmpeg. Verifique se o winget está disponível ou a conexão de internet.
+        pause
+        exit /b
+    )
+
+    rem Move o ffmpeg.exe para o diretório de destino
+    if exist "%PROGRAMFILES%\FFmpeg\bin\ffmpeg.exe" (
+        move /Y "%PROGRAMFILES%\FFmpeg\bin\ffmpeg.exe" "%FFMPEG_PATH%"
+        echo FFmpeg movido para %FFMPEG_PATH%.
+    ) else (
+        echo FFmpeg não encontrado no diretório esperado após a instalação. Verifique a instalação manualmente.
+        pause
+        exit /b
+    )
+) else (
+    echo FFmpeg já está instalado.
 )
 
 rem Define o caminho da pasta de Downloads
@@ -91,6 +121,11 @@ goto main_menu
 
 :download_single
 set /p url="Insira o URL do vídeo: "
+if "%url%"=="" (
+    echo URL não pode ser vazio. Tente novamente.
+    pause
+    goto download_single
+)
 echo Iniciando download do vídeo...
 "%YTDLP_PATH%" "%url%" -f "best[ext=mp4]" -o "%DOWNLOADS_PATH%\%(title)s.mp4" --progress
 
