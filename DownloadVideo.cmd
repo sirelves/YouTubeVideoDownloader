@@ -2,10 +2,12 @@
 chcp 65001 > nul
 setlocal
 
-rem Define o caminho do yt-dlp
-set YTDLP_PATH=%USERPROFILE%\Programas\YouTubeDownloader\yt-dlp.exe
-set FFMPEG_PATH=%USERPROFILE%\Programas\YouTubeDownloader\ffmpeg.exe
-set INSTALL_DIR=%USERPROFILE%\Programas\YouTubeDownloader
+rem Define o caminho do diretório onde o script está localizado
+set SCRIPT_DIR=%~dp0
+
+rem Define o caminho do yt-dlp e do ffmpeg no diretório do script
+set YTDLP_PATH=%SCRIPT_DIR%yt-dlp.exe
+set FFMPEG_PATH=%SCRIPT_DIR%ffmpeg.exe
 
 rem Mensagem de boas-vindas
 echo =======================================
@@ -17,13 +19,7 @@ echo Este programa permite baixar vídeos do YouTube em formato MP4.
 echo Pressione uma tecla para continuar...
 pause > nul
 
-rem Cria a pasta de instalação se não existir
-if not exist "%INSTALL_DIR%" (
-    mkdir "%INSTALL_DIR%"
-    echo Pasta de instalação criada em: %INSTALL_DIR%
-)
-
-rem Verifica se o yt-dlp está instalado
+rem Verifica se o yt-dlp está instalado no diretório do script
 if not exist "%YTDLP_PATH%" (
     echo yt-dlp não encontrado, baixando yt-dlp...
     curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe -o "%YTDLP_PATH%"
@@ -49,7 +45,7 @@ if not exist "%YTDLP_PATH%" (
     )
 )
 
-rem Verifica se o ffmpeg está instalado
+rem Verifica se o ffmpeg está instalado no diretório do script
 if not exist "%FFMPEG_PATH%" (
     echo ffmpeg não encontrado. Tentando instalar usando winget...
     
@@ -64,12 +60,12 @@ if not exist "%FFMPEG_PATH%" (
     rem Tenta instalar o ffmpeg com winget
     winget install --id Gyan.FFmpeg -e --accept-package-agreements --accept-source-agreements
     if %ERRORLEVEL% neq 0 (
-        echo Falha ao instalar o FFmpeg. Verifique se o winget está disponível ou a conexão de internet.
+        echo Falha ao instalar o FFmpeg. Verifique sua conexão de internet.
         pause
         exit /b
     )
 
-    rem Move o ffmpeg.exe para o diretório de destino
+    rem Move o ffmpeg.exe para o diretório do script
     if exist "%PROGRAMFILES%\FFmpeg\bin\ffmpeg.exe" (
         move /Y "%PROGRAMFILES%\FFmpeg\bin\ffmpeg.exe" "%FFMPEG_PATH%"
         echo FFmpeg movido para %FFMPEG_PATH%.
