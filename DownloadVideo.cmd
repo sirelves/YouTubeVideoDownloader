@@ -30,7 +30,7 @@ if not exist "%YTDLP_PATH%" (
     )
     echo yt-dlp baixado com sucesso.
 ) else (
-    echo yt-dlp já está instalado.
+    echo yt-dlp já está instaladot.
     rem Verifica se deseja atualizar o yt-dlp
     set /p update_yt="Deseja verificar se há atualizações para o yt-dlp? [S/N]: "
     if /I "%update_yt%"=="S" (
